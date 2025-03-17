@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media Scheduler</title>
+    <meta name="description" content="Schedule your social media posts in one place" />
+    <meta name="author" content="Lovable" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta property="og:image" content="/og-image.png" />
+  </head>
+
+  <body>
+    <div id="appContainer" class="min-h-screen bg-gray-50">
+      <!-- Header -->
+      <div class="header">
+        <h1>Social Media Scheduler</h1>
+        <p>Plan and schedule your social media content in one place</p>
+      </div>
+      
+      <div class="content_container">
+        <!-- Create Post Form -->
+        <div class="form_container">
+          <h2>Create Post</h2>
+          <div class="post_form">
+            <h3>Create New Post</h3>
+            
+            <form id="postForm">
+              <!-- Title -->
+              <div class="form_group">
+                <label for="postTitle">Title</label>
+                <input
+                  type="text"
+                  id="postTitle"
+                  placeholder="Enter post title"
+                  class="input_field"
+                  required
+                />
+              </div>
+              
+              <!-- Content -->
+              <div class="form_group">
+                <label for="postContent">Content</label>
+                <textarea
+                  id="postContent"
+                  placeholder="What's on your mind?"
+                  rows="4"
+                  class="input_field"
+                  required
+                ></textarea>
+              </div>
+              
+              <!-- Image Upload -->
+              <div class="form_group">
+                <label for="postImage">Image (optional)</label>
+                <div class="image_upload_container">
+                  <div id="imagePreview" class="image_preview"></div>
+                  <div class="upload_button_container">
+                    <label for="imageUpload" class="upload_button">
+                      <i class="fas fa-cloud-upload-alt"></i> Upload Image
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/*" hidden />
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Platform Selector -->
+              <div class="form_group">
+                <label>Platforms</label>
+                <div id="platforms" class="platform_selector">
+                  <button type="button" class="platform_button" data-platform="twitter">
+                    <i class="fab fa-twitter"></i> Twitter/X
+                  </button>
+                  <button type="button" class="platform_button" data-platform="facebook">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                  </button>
+                  <button type="button" class="platform_button" data-platform="instagram">
+                    <i class="fab fa-instagram"></i> Instagram
+                  </button>
+                  <button type="button" class="platform_button" data-platform="linkedin">
+                    <i class="fab fa-linkedin-in"></i> LinkedIn
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Date and Time (separate inputs) -->
+              <div class="form_group">
+                <label>Schedule Date & Time</label>
+                <div class="date_time_container">
+                  <div class="date_input_container">
+                    <label for="scheduleDate" class="input_label">Date</label>
+                    <input type="date" id="scheduleDate" class="input_field" required />
+                  </div>
+                  <div class="time_input_container">
+                    <label for="scheduleTime" class="input_label">Time</label>
+                    <input type="time" id="scheduleTime" class="input_field" required />
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Submit Button -->
+              <button type="submit" class="schedule_button">Schedule Post</button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Scheduled Posts -->
+        <div class="posts_container">
+          <h2>Scheduled Posts</h2>
+          <div class="posts_list_container">
+            <div id="postsList" class="posts_list"></div>
+            <div id="emptyPostsMessage" class="empty_posts_message">
+              No posts scheduled. Create your first post!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
