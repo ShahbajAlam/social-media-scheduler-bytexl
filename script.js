@@ -323,7 +323,7 @@ function formatDate(date) {
 }
 
 function generateId() {
-    return Math.random().toString(36).slice(2, 9);
+    return Math.random().toString(36).substring(2, 9);
 }
 
 function savePostsToStorage() {
