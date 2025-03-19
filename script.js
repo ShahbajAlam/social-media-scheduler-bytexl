@@ -1,11 +1,10 @@
-
 // Elements
 const postForm = document.getElementById('postForm');
 const postsList = document.getElementById('postsList');
 const emptyPostsMessage = document.getElementById('emptyPostsMessage');
 const imageUpload = document.getElementById('imageUpload');
 const imagePreview = document.getElementById('imagePreview');
-const platformButtons = document.querySelectorAll('.platform_button');
+const platformButtons = document.querySelectorAll('.platform-button');
 const scheduleDateInput = document.getElementById('scheduleDate');
 const scheduleTimeInput = document.getElementById('scheduleTime');
 
@@ -28,8 +27,8 @@ platformButtons.forEach(button => {
 });
 
 postsList.addEventListener('click', function (e) {
-    if (e.target.classList.contains('delete_post_button') || e.target.parentNode.classList.contains('delete_post_button')) {
-        const postCard = e.target.closest('.post_card');
+    if (e.target.classList.contains('delete-post-button') || e.target.parentNode.classList.contains('delete-post-button')) {
+        const postCard = e.target.closest('.post-card');
         if (postCard) {
             const postId = postCard.dataset.postId;
             deletePost(postId);
@@ -109,9 +108,10 @@ function handleFormSubmit(e) {
     savePostsToStorage();
     updatePostsList();
 
+
     // Reset form
     postForm.reset();
-    imagePreview.classList.remove('has_image');
+    imagePreview.classList.remove('has-image');
     imagePreview.style.backgroundImage = 'none';
     imageData = null;
     selectedPlatforms = [];
@@ -174,7 +174,7 @@ function handleImageUpload(e) {
     reader.onload = function (event) {
         imageData = event.target.result;
         imagePreview.style.backgroundImage = `url(${imageData})`;
-        imagePreview.classList.add('has_image');
+        imagePreview.classList.add('has-image');
     };
     reader.readAsDataURL(file);
 }
@@ -219,19 +219,19 @@ function updatePostsList() {
 
 function createPostElement(post) {
     const postCard = document.createElement('div');
-    postCard.className = 'post_card';
+    postCard.className = 'post-card';
     postCard.dataset.postId = post.id;
 
     // Create post header
     const header = document.createElement('div');
-    header.className = 'post_header';
+    header.className = 'post-header';
 
     const title = document.createElement('div');
-    title.className = 'post_title';
+    title.className = 'post-title';
     title.textContent = post.title;
 
     const date = document.createElement('div');
-    date.className = 'post_date';
+    date.className = 'post-date';
     date.textContent = formatDate(post.scheduledFor);
 
     header.appendChild(title);
@@ -239,24 +239,24 @@ function createPostElement(post) {
 
     // Create post content
     const content = document.createElement('div');
-    content.className = 'post_content';
+    content.className = 'post-content';
     content.textContent = post.content;
 
     // Create post image if available
     let image;
     if (post.image) {
         image = document.createElement('div');
-        image.className = 'post_image';
+        image.className = 'post-image';
         image.style.backgroundImage = `url(${post.image})`;
     }
 
     // Create platform tags
     const platforms = document.createElement('div');
-    platforms.className = 'post_platforms';
+    platforms.className = 'post-platforms';
 
     post.platforms.forEach(platform => {
         const tag = document.createElement('span');
-        tag.className = 'platform_tag';
+        tag.className = 'platform-tag';
 
         const icon = document.createElement('i');
         icon.className = getPlatformIcon(platform);
@@ -269,7 +269,7 @@ function createPostElement(post) {
 
     // Create delete button
     const deleteButton = document.createElement('button');
-    deleteButton.className = 'delete_post_button';
+    deleteButton.className = 'delete-post-button';
     deleteButton.title = 'Delete post';
 
     const deleteIcon = document.createElement('i');
@@ -278,7 +278,7 @@ function createPostElement(post) {
 
     // Create actions container
     const actionsContainer = document.createElement('div');
-    actionsContainer.className = 'post_actions';
+    actionsContainer.className = 'post-actions';
     actionsContainer.appendChild(deleteButton);
 
     // Assemble post card
@@ -344,12 +344,13 @@ function loadPostsFromStorage() {
             console.error('Error loading saved posts:', error);
         }
     }
+    console.log(scheduledPosts)
 }
 
 function showToast(message, type = 'success') {
     // Create toast element
     const toast = document.createElement('div');
-    toast.className = `toast toast_${type}`;
+    toast.className = `toast toast-${type}`;
     toast.textContent = message;
 
     // Add toast to body

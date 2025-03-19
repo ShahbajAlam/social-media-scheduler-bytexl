@@ -34,7 +34,7 @@ body {
 }
 
 /* Content Container */
-.content_container {
+.content-container {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -43,47 +43,44 @@ body {
 }
 
 
-@media (min-width: 768px) {
-  .content_container {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 /* Form Container */
-.form_container, .posts_container {
+.form-container,
+.posts-container {
   animation: bounceIn 0.6s ease-out;
 }
 
-.posts_container {
+.posts-container {
   animation-delay: 0.1s;
 }
 
-.form_container h2, .posts_container h2 {
+.form-container h2,
+.posts-container h2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-.post_form, .posts_list_container {
+.post-form,
+.posts-list-container {
   background-color: white;
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   padding: 1.5rem;
 }
 
-.post_form h3 {
+.post-form h3 {
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
 
 /* Form Elements */
-.form_group {
+.form-group {
   margin-bottom: 1.5rem;
 }
 
-.form_group label {
+.form-group label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
@@ -91,7 +88,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.input_field {
+.input-field {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
@@ -100,28 +97,29 @@ body {
   transition: border-color 0.15s ease-in-out;
 }
 
-.input_field:focus {
+.input-field:focus {
   outline: none;
   border-color: #93c5fd;
   box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
 }
 
-textarea.input_field {
+textarea.input-field {
   resize: vertical;
   min-height: 100px;
 }
 
 /* Date and Time Container Styles */
-.date_time_container {
+.date-time-container {
   display: flex;
   gap: 1rem;
 }
 
-.date_input_container, .time_input_container {
+.date-input-container,
+.time-input-container {
   flex: 1;
 }
 
-.input_label {
+.input-label {
   display: block;
   font-size: 0.75rem;
   font-weight: 500;
@@ -130,13 +128,13 @@ textarea.input_field {
 }
 
 /* Image Upload */
-.image_upload_container {
+.image-upload-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.image_preview {
+.image-preview {
   min-height: 150px;
   background-color: #f3f4f6;
   border: 2px dashed #d1d5db;
@@ -149,17 +147,17 @@ textarea.input_field {
   background-position: center;
 }
 
-.image_preview::before {
+.image-preview::before {
   content: "No image selected";
   display: block;
 }
 
-.image_preview.has_image::before {
+.image-preview.has-image::before {
   content: "";
   display: none;
 }
 
-.upload_button {
+.upload-button {
   display: inline-block;
   background-color: #f3f4f6;
   color: #4b5563;
@@ -171,23 +169,23 @@ textarea.input_field {
   text-align: center;
 }
 
-.upload_button:hover {
+.upload-button:hover {
   background-color: #e5e7eb;
 }
 
-.upload_button_container {
+.upload-button-container {
   display: flex;
   justify-content: center;
 }
 
 /* Platform Selector */
-.platform_selector {
+.platform-selector {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.platform_button {
+.platform-button {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -200,18 +198,18 @@ textarea.input_field {
   transition: all 0.15s ease-in-out;
 }
 
-.platform_button:hover {
+.platform-button:hover {
   background-color: #e5e7eb;
 }
 
-.platform_button.selected {
+.platform-button.selected {
   background-color: #3984e8;
   border-color: #93c5fd;
   color: #fff;
 }
 
 /* Schedule Button */
-.schedule_button {
+.schedule-button {
   display: block;
   width: 100%;
   background-color: #1e40af;
@@ -225,18 +223,18 @@ textarea.input_field {
   transition: background-color 0.15s ease-in-out;
 }
 
-.schedule_button:hover {
+.schedule-button:hover {
   background-color: #1a365d;
 }
 
 /* Posts List */
-.posts_list {
+.posts-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.post_card {
+.post-card {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -245,28 +243,28 @@ textarea.input_field {
   position: relative;
 }
 
-.post_header {
+.post-header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
-.post_title {
+.post-title {
   font-weight: 600;
   font-size: 1rem;
 }
 
-.post_date {
+.post-date {
   font-size: 0.75rem;
   color: #6b7280;
 }
 
-.post_content {
+.post-content {
   margin-bottom: 1rem;
   font-size: 0.875rem;
 }
 
-.post_image {
+.post-image {
   width: 100%;
   height: 150px;
   background-size: cover;
@@ -275,13 +273,13 @@ textarea.input_field {
   margin-bottom: 1rem;
 }
 
-.post_platforms {
+.post-platforms {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
 
-.platform_tag {
+.platform-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -292,13 +290,13 @@ textarea.input_field {
   font-size: 0.75rem;
 }
 
-.post_actions {
+.post-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 0.5rem;
 }
 
-.delete_post_button {
+.delete-post-button {
   background-color: transparent;
   border: none;
   color: #ef4444;
@@ -311,11 +309,11 @@ textarea.input_field {
   justify-content: center;
 }
 
-.delete_post_button:hover {
+.delete-post-button:hover {
   background-color: #fee2e2;
 }
 
-.empty_posts_message {
+.empty-posts-message {
   text-align: center;
   padding: 2rem 0;
   color: #6b7280;
@@ -332,7 +330,7 @@ textarea.input_field {
   color: #333;
   padding: 12px 24px;
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -343,12 +341,23 @@ textarea.input_field {
   transform: translateX(-50%) translateY(0);
 }
 
-.toast_success {
+.toast-success {
   border-left: 4px solid #10b981;
 }
 
-.toast_error {
+.toast-error {
   border-left: 4px solid #ef4444;
+}
+
+.posts-list-container {
+  min-height: 500px;
+}
+
+
+@media (min-width: 768px) {
+  .content-container {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Animations */
@@ -356,6 +365,7 @@ textarea.input_field {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -366,9 +376,11 @@ textarea.input_field {
     opacity: 0;
     transform: scale(0.9);
   }
+
   70% {
     transform: scale(1.02);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -380,12 +392,9 @@ textarea.input_field {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.posts_list_container {
-  min-height: 500px;
 }
