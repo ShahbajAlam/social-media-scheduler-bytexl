@@ -344,7 +344,6 @@ function loadPostsFromStorage() {
             console.error('Error loading saved posts:', error);
         }
     }
-    console.log(scheduledPosts)
 }
 
 function showToast(message, type = 'success') {
