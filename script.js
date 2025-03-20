@@ -217,6 +217,7 @@ function updatePostsList() {
     });
 }
 
+
 function createPostElement(post) {
     const postCard = document.createElement('div');
     postCard.className = 'post-card';
