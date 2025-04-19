@@ -39,6 +39,7 @@ postsList.addEventListener("click", function (e) {
     }
 });
 
+// Function to delete post
 function deletePost(postId) {
     // Remove post from array
     scheduledPosts = scheduledPosts.filter((post) => post.id !== postId);
@@ -51,13 +52,12 @@ function deletePost(postId) {
     showToast("Post deleted successfully!");
 }
 
+// Function to set default date and time
 function setDefaultDateAndTime() {
-    // Set default date to today
     const today = new Date();
     const formattedDate = formatDateForInput(today);
     scheduleDateInput.value = formattedDate;
 
-    // Set default time to current time + 1 hour, rounded to nearest 15 minutes
     const nextHour = new Date(today);
     nextHour.setHours(nextHour.getHours() + 1);
     nextHour.setMinutes(Math.ceil(nextHour.getMinutes() / 15) * 15);
@@ -65,6 +65,7 @@ function setDefaultDateAndTime() {
     scheduleTimeInput.value = formattedTime;
 }
 
+// Function to format date for input
 function formatDateForInput(date) {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -72,12 +73,14 @@ function formatDateForInput(date) {
     return `${year}-${month}-${day}`;
 }
 
+// Function to format time for input
 function formatTimeForInput(date) {
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
 }
 
+// Handle form submission
 function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -90,7 +93,6 @@ function handleFormSubmit(e) {
     const dateValue = scheduleDateInput.value;
     const timeValue = scheduleTimeInput.value;
 
-    // Combine date and time values into a single Date object
     const [year, month, day] = dateValue.split("-").map(Number);
     const [hours, minutes] = timeValue.split(":").map(Number);
     const scheduledFor = new Date(year, month - 1, day, hours, minutes);
@@ -124,6 +126,7 @@ function handleFormSubmit(e) {
     showToast("Post scheduled successfully!");
 }
 
+// Function to validate form
 function validateForm() {
     const title = document.getElementById("postTitle").value;
     const content = document.getElementById("postContent").value;
@@ -150,7 +153,6 @@ function validateForm() {
         return false;
     }
 
-    // Check if the scheduled date is in the past
     const [year, month, day] = dateValue.split("-").map(Number);
     const [hours, minutes] = timeValue.split(":").map(Number);
     const scheduledDate = new Date(year, month - 1, day, hours, minutes);
@@ -163,6 +165,7 @@ function validateForm() {
     return true;
 }
 
+// Handle image upload
 function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -181,122 +184,124 @@ function handleImageUpload(e) {
     reader.readAsDataURL(file);
 }
 
+// Toggle platform selection
 function togglePlatform(button) {
     const platformId = button.dataset.platform;
 
     if (selectedPlatforms.includes(platformId)) {
-        // Remove platform
         selectedPlatforms = selectedPlatforms.filter((id) => id !== platformId);
         button.classList.remove("selected");
     } else {
-        // Add platform
         selectedPlatforms.push(platformId);
         button.classList.add("selected");
     }
 }
 
+// Function to update the posts list
 function updatePostsList() {
-    // Sort posts by scheduled date
-    scheduledPosts.sort(
-        (a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor)
-    );
-
-    // Check if there are posts
     if (scheduledPosts.length === 0) {
-        postsList.innerHTML = "";
-        emptyPostsMessage.style.display = "block";
+        renderEmptyPostsMessage();
         return;
     }
 
-    // Hide empty message and show posts
-    emptyPostsMessage.style.display = "none";
-
-    // Clear current list
     postsList.innerHTML = "";
-
-    // Add posts to list
-    scheduledPosts.forEach((post) => {
-        const postElement = createPostElement(post);
-        postsList.appendChild(postElement);
-    });
+    scheduledPosts
+        .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor))
+        .forEach((post) => {
+            renderPost(post);
+        });
 }
 
+// Function to render a single post
+function renderPost(post) {
+    const postElement = createPostElement(post);
+    postsList.appendChild(postElement);
+}
+
+// Function to render the empty posts message
+function renderEmptyPostsMessage() {
+    postsList.innerHTML = "";
+    emptyPostsMessage.style.display = "block";
+}
+
+// Create a post element
 function createPostElement(post) {
     const postCard = document.createElement("div");
     postCard.className = "post-card";
     postCard.dataset.postId = post.id;
 
-    // Create post header
-    const header = document.createElement("div");
-    header.className = "post-header";
-
-    const title = document.createElement("div");
-    title.className = "post-title";
-    title.textContent = post.title;
-
-    const date = document.createElement("div");
-    date.className = "post-date";
-    date.textContent = formatDate(post.scheduledFor);
-
-    header.appendChild(title);
-    header.appendChild(date);
-
-    // Create post content
-    const content = document.createElement("div");
-    content.className = "post-content";
-    content.textContent = post.content;
-
-    // Create post image if available
-    let image;
-    if (post.image) {
-        image = document.createElement("div");
-        image.className = "post-image";
-        image.style.backgroundImage = `url(${post.image})`;
-    }
-
-    // Create platform tags
-    const platforms = document.createElement("div");
-    platforms.className = "post-platforms";
-
-    post.platforms.forEach((platform) => {
-        const tag = document.createElement("span");
-        tag.className = "platform-tag";
-
-        const icon = document.createElement("i");
-        icon.className = getPlatformIcon(platform);
-
-        tag.appendChild(icon);
-        tag.appendChild(
-            document.createTextNode(` ${getPlatformName(platform)}`)
-        );
-
-        platforms.appendChild(tag);
-    });
-
-    // Create delete button
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "delete-post-button";
-    deleteButton.title = "Delete post";
-
-    const deleteIcon = document.createElement("i");
-    deleteIcon.className = "fas fa-trash-alt";
-    deleteButton.appendChild(deleteIcon);
-
-    // Create actions container
-    const actionsContainer = document.createElement("div");
-    actionsContainer.className = "post-actions";
-    actionsContainer.appendChild(deleteButton);
-
     // Assemble post card
-    postCard.appendChild(header);
-    postCard.appendChild(content);
-    if (image) postCard.appendChild(image);
-    postCard.appendChild(platforms);
-    postCard.appendChild(actionsContainer);
+    postCard.innerHTML = `
+        <div class="post-header">
+            <div class="post-title">${post.title}</div>
+            <div class="post-date">${formatDate(post.scheduledFor)}</div>
+        </div>
+        <div class="post-content">${post.content}</div>
+        ${
+            post.image
+                ? `<div class="post-image" style="background-image: url(${post.image})"></div>`
+                : ""
+        }
+        <div class="post-platforms">
+            ${post.platforms
+                .map(
+                    (platform) => `
+                <span class="platform-tag">
+                    <i class="${getPlatformIcon(
+                        platform
+                    )}"></i> ${getPlatformName(platform)}
+                </span>
+            `
+                )
+                .join("")}
+        </div>
+        <div class="post-actions">
+            <button class="delete-post-button" title="Delete post">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    `;
 
     return postCard;
 }
 
+// Function to show toast notifications
+function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+// Save posts to storage
+function savePostsToStorage() {
+    localStorage.setItem("scheduledPosts", JSON.stringify(scheduledPosts));
+}
+
+// Load posts from storage
+function loadPostsFromStorage() {
+    const savedPosts = localStorage.getItem("scheduledPosts");
+    if (savedPosts) {
+        try {
+            const parsedPosts = JSON.parse(savedPosts);
+            scheduledPosts = parsedPosts.map((post) => ({
+                ...post,
+                scheduledFor: new Date(post.scheduledFor),
+                created: new Date(post.created),
+            }));
+        } catch (error) {
+            console.error("Error loading saved posts:", error);
+        }
+    }
+}
+
+// Helper functions for platform icons and names
 function getPlatformIcon(platformId) {
     const icons = {
         twitter: "fab fa-twitter",
@@ -317,6 +322,10 @@ function getPlatformName(platformId) {
     return names[platformId] || platformId;
 }
 
+function generateId() {
+    return Math.random().toString(36).substring(2, 9);
+}
+
 function formatDate(date) {
     const options = {
         year: "numeric",
@@ -326,51 +335,4 @@ function formatDate(date) {
         minute: "2-digit",
     };
     return new Date(date).toLocaleDateString("en-US", options);
-}
-
-function generateId() {
-    return Math.random().toString(36).substring(2, 9);
-}
-
-function savePostsToStorage() {
-    localStorage.setItem("scheduledPosts", JSON.stringify(scheduledPosts));
-}
-
-function loadPostsFromStorage() {
-    const savedPosts = localStorage.getItem("scheduledPosts");
-    if (savedPosts) {
-        try {
-            const parsedPosts = JSON.parse(savedPosts);
-            scheduledPosts = parsedPosts.map((post) => ({
-                ...post,
-                scheduledFor: new Date(post.scheduledFor),
-                created: new Date(post.created),
-            }));
-        } catch (error) {
-            console.error("Error loading saved posts:", error);
-        }
-    }
-}
-
-function showToast(message, type = "success") {
-    // Create toast element
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    // Add toast to body
-    document.body.appendChild(toast);
-
-    // Trigger animation
-    setTimeout(() => {
-        toast.classList.add("show");
-    }, 10);
-
-    // Remove toast after timeout
-    setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => {
-            document.body.removeChild(toast);
-        }, 300);
-    }, 3000);
 }
