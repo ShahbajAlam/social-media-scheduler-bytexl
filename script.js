@@ -8,10 +8,22 @@ const platformButtons = document.querySelectorAll(".platform-button");
 const scheduleDateInput = document.getElementById("scheduleDate");
 const scheduleTimeInput = document.getElementById("scheduleTime");
 
-// State
-let scheduledPosts = [];
-let selectedPlatforms = [];
-let imageData = null;
+// State management with Proxy
+let state = {
+    scheduledPosts: [],
+    selectedPlatforms: [],
+    imageData: null,
+};
+
+const proxyState = new Proxy(state, {
+    set(target, property, value) {
+        target[property] = value;
+        if (property === "scheduledPosts") {
+            updatePostsList();
+        }
+        return true;
+    },
+});
 
 // Initialize
 loadPostsFromStorage();
@@ -41,11 +53,12 @@ postsList.addEventListener("click", function (e) {
 
 function deletePost(postId) {
     // Remove post from array
-    scheduledPosts = scheduledPosts.filter((post) => post.id !== postId);
+    proxyState.scheduledPosts = proxyState.scheduledPosts.filter(
+        (post) => post.id !== postId
+    );
 
     // Update storage and UI
     savePostsToStorage();
-    updatePostsList();
 
     // Show success message
     showToast("Post deleted successfully!");
@@ -100,14 +113,14 @@ function handleFormSubmit(e) {
         id: generateId(),
         title: title,
         content: content,
-        image: imageData,
-        platforms: [...selectedPlatforms],
+        image: proxyState.imageData,
+        platforms: [...proxyState.selectedPlatforms],
         scheduledFor: scheduledFor,
         created: new Date(),
     };
 
     // Add post to list
-    scheduledPosts.push(newPost);
+    proxyState.scheduledPosts.push(newPost);
     savePostsToStorage();
     updatePostsList();
 
@@ -115,8 +128,8 @@ function handleFormSubmit(e) {
     postForm.reset();
     imagePreview.classList.remove("has-image");
     imagePreview.style.backgroundImage = "none";
-    imageData = null;
-    selectedPlatforms = [];
+    proxyState.imageData = null;
+    proxyState.selectedPlatforms = [];
     platformButtons.forEach((btn) => btn.classList.remove("selected"));
     setDefaultDateAndTime();
 
@@ -140,7 +153,7 @@ function validateForm() {
         return false;
     }
 
-    if (selectedPlatforms.length === 0) {
+    if (proxyState.selectedPlatforms.length === 0) {
         showToast("Please select at least one platform", "error");
         return false;
     }
@@ -174,8 +187,8 @@ function handleImageUpload(e) {
 
     const reader = new FileReader();
     reader.onload = function (event) {
-        imageData = event.target.result;
-        imagePreview.style.backgroundImage = `url(${imageData})`;
+        proxyState.imageData = event.target.result;
+        imagePreview.style.backgroundImage = `url(${proxyState.imageData})`;
         imagePreview.classList.add("has-image");
     };
     reader.readAsDataURL(file);
@@ -184,25 +197,37 @@ function handleImageUpload(e) {
 function togglePlatform(button) {
     const platformId = button.dataset.platform;
 
-    if (selectedPlatforms.includes(platformId)) {
+    if (proxyState.selectedPlatforms.includes(platformId)) {
         // Remove platform
-        selectedPlatforms = selectedPlatforms.filter((id) => id !== platformId);
-        button.classList.remove("selected");
+        proxyState.selectedPlatforms = proxyState.selectedPlatforms.filter(
+            (id) => id !== platformId
+        );
     } else {
         // Add platform
-        selectedPlatforms.push(platformId);
+        proxyState.selectedPlatforms.push(platformId);
+    }
+
+    // Optional: Update button state
+    updatePlatformButtonState(button);
+}
+
+function updatePlatformButtonState(button) {
+    const platformId = button.dataset.platform;
+    if (proxyState.selectedPlatforms.includes(platformId)) {
         button.classList.add("selected");
+    } else {
+        button.classList.remove("selected");
     }
 }
 
 function updatePostsList() {
     // Sort posts by scheduled date
-    scheduledPosts.sort(
+    proxyState.scheduledPosts.sort(
         (a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor)
     );
 
     // Check if there are posts
-    if (scheduledPosts.length === 0) {
+    if (proxyState.scheduledPosts.length === 0) {
         postsList.innerHTML = "";
         emptyPostsMessage.style.display = "block";
         return;
@@ -215,7 +240,7 @@ function updatePostsList() {
     postsList.innerHTML = "";
 
     // Add posts to list
-    scheduledPosts.forEach((post) => {
+    proxyState.scheduledPosts.forEach((post) => {
         const postElement = createPostElement(post);
         postsList.appendChild(postElement);
     });
@@ -329,48 +354,32 @@ function formatDate(date) {
 }
 
 function generateId() {
-    return Math.random().toString(36).substring(2, 9);
+    return `post-${Math.random().toString(36).substr(2, 9)}`;
 }
 
 function savePostsToStorage() {
-    localStorage.setItem("scheduledPosts", JSON.stringify(scheduledPosts));
+    localStorage.setItem(
+        "scheduledPosts",
+        JSON.stringify(proxyState.scheduledPosts)
+    );
 }
 
 function loadPostsFromStorage() {
     const savedPosts = localStorage.getItem("scheduledPosts");
     if (savedPosts) {
-        try {
-            const parsedPosts = JSON.parse(savedPosts);
-            scheduledPosts = parsedPosts.map((post) => ({
-                ...post,
-                scheduledFor: new Date(post.scheduledFor),
-                created: new Date(post.created),
-            }));
-        } catch (error) {
-            console.error("Error loading saved posts:", error);
-        }
+        proxyState.scheduledPosts = JSON.parse(savedPosts);
     }
 }
 
 function showToast(message, type = "success") {
-    // Create toast element
+    // Create toast message
     const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
+    toast.className = `toast show toast-${type}`;
     toast.textContent = message;
-
-    // Add toast to body
     document.body.appendChild(toast);
 
-    // Trigger animation
+    // Auto-hide toast
     setTimeout(() => {
-        toast.classList.add("show");
-    }, 10);
-
-    // Remove toast after timeout
-    setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => {
-            document.body.removeChild(toast);
-        }, 300);
+        toast.remove();
     }, 3000);
 }
