@@ -282,6 +282,15 @@ function createPostElement(post) {
     deleteIcon.className = "fas fa-trash-alt";
     deleteButton.appendChild(deleteIcon);
 
+    // Add event listener to delete button
+    deleteButton.addEventListener("click", () => {
+        // Remove post from the DOM
+        postCard.remove();
+
+        // If using localStorage, delete the post from there as well
+        deletePost(post.id);
+    });
+
     // Create actions container
     const actionsContainer = document.createElement("div");
     actionsContainer.className = "post-actions";
