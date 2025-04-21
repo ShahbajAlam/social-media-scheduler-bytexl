@@ -221,12 +221,29 @@ function updatePostsList() {
     });
 }
 
+// Create the post card element
 function createPostElement(post) {
     const postCard = document.createElement("div");
     postCard.className = "post-card";
     postCard.dataset.postId = post.id;
 
-    // Create post header
+    const header = createPostHeader(post);
+    const content = createPostContent(post);
+    const image = createPostImage(post);
+    const platforms = createPostPlatforms(post);
+    const actionsContainer = createPostActions(post);
+
+    postCard.appendChild(header);
+    postCard.appendChild(content);
+    if (image) postCard.appendChild(image);
+    postCard.appendChild(platforms);
+    postCard.appendChild(actionsContainer);
+
+    return postCard;
+}
+
+// Create the post header
+function createPostHeader(post) {
     const header = document.createElement("div");
     header.className = "post-header";
 
@@ -241,20 +258,31 @@ function createPostElement(post) {
     header.appendChild(title);
     header.appendChild(date);
 
-    // Create post content
+    return header;
+}
+
+// Create the post content
+function createPostContent(post) {
     const content = document.createElement("div");
     content.className = "post-content";
     content.textContent = post.content;
 
-    // Create post image if available
-    let image;
+    return content;
+}
+
+// Create the post image if available
+function createPostImage(post) {
     if (post.image) {
-        image = document.createElement("div");
+        const image = document.createElement("div");
         image.className = "post-image";
         image.style.backgroundImage = `url(${post.image})`;
+        return image;
     }
+    return null; // Return null if there's no image
+}
 
-    // Create platform tags
+// Create platform tags
+function createPostPlatforms(post) {
     const platforms = document.createElement("div");
     platforms.className = "post-platforms";
 
@@ -273,7 +301,11 @@ function createPostElement(post) {
         platforms.appendChild(tag);
     });
 
-    // Create delete button
+    return platforms;
+}
+
+// Create the delete button and actions container
+function createPostActions(post) {
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-post-button";
     deleteButton.title = "Delete post";
@@ -282,19 +314,21 @@ function createPostElement(post) {
     deleteIcon.className = "fas fa-trash-alt";
     deleteButton.appendChild(deleteIcon);
 
-    // Create actions container
+    // Add event listener to delete button
+    deleteButton.addEventListener("click", () => {
+        // Remove post from the DOM
+        const postCard = deleteButton.closest(".post-card");
+        postCard.remove();
+
+        // If using localStorage, delete the post from there as well
+        deletePost(post.id);
+    });
+
     const actionsContainer = document.createElement("div");
     actionsContainer.className = "post-actions";
     actionsContainer.appendChild(deleteButton);
 
-    // Assemble post card
-    postCard.appendChild(header);
-    postCard.appendChild(content);
-    if (image) postCard.appendChild(image);
-    postCard.appendChild(platforms);
-    postCard.appendChild(actionsContainer);
-
-    return postCard;
+    return actionsContainer;
 }
 
 function getPlatformIcon(platformId) {
