@@ -2,12 +2,12 @@
 
 ### 1. **Centralized Post Rendering**
 
--   Introduced a centralized `renderPosts()` function that is responsible for generating and displaying all scheduled posts. Instead of manipulating the DOM directly each time a post is added, edited, or deleted, the entire list is re-rendered based on the current `scheduledPosts` state.
+-   Introduced a centralized `renderPost()` function that is responsible for generating and displaying all scheduled posts. Instead of manipulating the DOM directly each time a post is added, edited, or deleted, the entire list is re-rendered based on the current `scheduledPosts` state.
 
 ### 2. **Removal of Manual DOM Manipulation**
 
 -   Replaced the previous manual `createElement` and `appendChild` method of adding and deleting posts with a more declarative rendering approach.
--   The UI now reflects the current state of `scheduledPosts` seamlessly by calling `renderPosts()` when necessary.
+-   The UI now reflects the current state of `scheduledPosts` seamlessly by calling `renderPost()` when necessary.
 
 ### 3. **Use of Template Literals for Post Creation**
 
