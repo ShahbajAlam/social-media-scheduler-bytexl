@@ -295,7 +295,8 @@ textarea.input-field {
     margin-top: 0.5rem;
 }
 
-.delete-post-button {
+.delete-post-button,
+.edit-post-button {
     background-color: transparent;
     border: none;
     color: #ef4444;
@@ -306,6 +307,10 @@ textarea.input-field {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.edit-post-button {
+    color: #10b981;
 }
 
 .delete-post-button:hover {
