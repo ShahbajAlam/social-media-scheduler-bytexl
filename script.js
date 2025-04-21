@@ -204,6 +204,8 @@ function updatePostsList() {
         return;
     }
 
+    emptyPostsMessage.style.display = "none";
+
     postsList.innerHTML = "";
     scheduledPosts
         .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor))
