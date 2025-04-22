@@ -5,6 +5,7 @@ import Toast from "./components/Toast";
 
 const App = () => {
     const [toast, setToast] = useState(null);
+    const [postBeingEdited, setPostBeingEdited] = useState(null);
     const [scheduledPosts, setScheduledPosts] = useState(() => {
         const saved = localStorage.getItem("scheduledPosts");
         if (saved) {
@@ -33,6 +34,16 @@ const App = () => {
         setToast({ message: "Post deleted successfully!", type: "success" });
     };
 
+    const handleEditComplete = (updatedPost) => {
+        setScheduledPosts((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === updatedPost.id ? updatedPost : post
+            )
+        );
+        setPostBeingEdited(null);
+        setToast({ message: "Post updated successfully!", type: "success" });
+    };
+
     return (
         <div className="min-h-screen">
             <div className="header">
@@ -40,8 +51,16 @@ const App = () => {
                 <p>Plan and schedule your social media content in one place</p>
             </div>
             <div className="content-container">
-                <PostForm onSubmit={addPost} />
-                <PostList posts={scheduledPosts} onDelete={deletePost} />
+                <PostForm
+                    onSubmit={addPost}
+                    postToEdit={postBeingEdited}
+                    onEditComplete={handleEditComplete}
+                />
+                <PostList
+                    posts={scheduledPosts}
+                    onDelete={deletePost}
+                    onEdit={setPostBeingEdited}
+                />
             </div>
             {toast && (
                 <Toast

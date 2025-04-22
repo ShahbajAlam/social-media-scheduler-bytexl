@@ -1,6 +1,6 @@
 import React from "react";
 
-const PostList = ({ posts, onDelete }) => {
+const PostList = ({ posts, onDelete, onEdit }) => {
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -58,6 +58,12 @@ const PostList = ({ posts, onDelete }) => {
                                     ))}
                                 </div>
                                 <div className="post-actions">
+                                    <button
+                                        className="edit-post-button"
+                                        onClick={() => onEdit(post)}
+                                    >
+                                        <i className="fas fa-edit"></i>
+                                    </button>
                                     <button
                                         className="delete-post-button"
                                         onClick={() => onDelete(post.id)}

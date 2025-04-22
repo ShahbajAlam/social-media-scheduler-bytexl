@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ImageUpload = ({ imageData, setImageData }) => {
     const [preview, setPreview] = useState(null);
+
+    useEffect(() => {
+        setPreview(imageData);
+    }, [imageData]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
@@ -37,7 +41,7 @@ const ImageUpload = ({ imageData, setImageData }) => {
                     />
                 </div>
             </div>
-            {imageData && (
+            {preview && (
                 <div
                     id="imagePreview"
                     className={`image-preview ${preview ? "has-image" : ""}`}

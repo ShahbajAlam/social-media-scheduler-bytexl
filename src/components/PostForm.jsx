@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageUpload from "./ImageUpload";
 
 const platformsList = ["twitter", "facebook", "instagram", "linkedin"];
 
-const PostForm = ({ onSubmit }) => {
+const PostForm = ({ onSubmit, postToEdit, onEditComplete }) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [date, setDate] = useState(getDefaultDate());
     const [time, setTime] = useState(getDefaultTime());
     const [platforms, setPlatforms] = useState([]);
     const [imageData, setImageData] = useState(null);
+
+    useEffect(() => {
+        if (postToEdit) {
+            setTitle(postToEdit.title);
+            setContent(postToEdit.content);
+            setDate(postToEdit.scheduledFor.toISOString().split("T")[0]);
+            setTime(postToEdit.scheduledFor.toTimeString().slice(0, 5));
+            setPlatforms(postToEdit.platforms);
+            setImageData(postToEdit.image || null);
+        }
+    }, [postToEdit]);
 
     function getDefaultDate() {
         const today = new Date();
@@ -48,16 +59,23 @@ const PostForm = ({ onSubmit }) => {
         }
 
         const post = {
-            id: Math.random().toString(36).slice(2, 9),
+            id: postToEdit
+                ? postToEdit.id
+                : Math.random().toString(36).slice(2, 9),
             title,
             content,
             scheduledFor,
             platforms,
             image: imageData,
-            created: new Date(),
+            created: postToEdit ? postToEdit.created : new Date(),
         };
 
-        onSubmit(post);
+        if (postToEdit) {
+            onEditComplete(post);
+        } else {
+            onSubmit(post);
+        }
+
         setTitle("");
         setContent("");
         setImageData(null);
@@ -163,7 +181,7 @@ const PostForm = ({ onSubmit }) => {
                     </div>
 
                     <button type="submit" className="schedule-button">
-                        Schedule Post
+                        {postToEdit ? "Update Post" : "Schedule Post"}
                     </button>
                 </form>
             </div>
