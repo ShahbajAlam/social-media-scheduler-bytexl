@@ -23,8 +23,8 @@ const PostList = ({ posts, onDelete }) => {
                         .map((post) => (
                             <div
                                 className="post-card"
-                                key={post.id}
-                                data-post-id={post.id}
+                                key={post._id}
+                                data-post-id={post._id}
                             >
                                 <div className="post-header">
                                     <div className="post-title">
@@ -60,7 +60,7 @@ const PostList = ({ posts, onDelete }) => {
                                 <div className="post-actions">
                                     <button
                                         className="delete-post-button"
-                                        onClick={() => onDelete(post.id)}
+                                        onClick={() => onDelete(post._id)}
                                     >
                                         <i className="fas fa-trash-alt"></i>
                                     </button>

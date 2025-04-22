@@ -5,32 +5,70 @@ import Toast from "./components/Toast";
 
 const App = () => {
     const [toast, setToast] = useState(null);
-    const [scheduledPosts, setScheduledPosts] = useState(() => {
-        const saved = localStorage.getItem("scheduledPosts");
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            return parsed.map((post) => ({
-                ...post,
-                scheduledFor: new Date(post.scheduledFor),
-                created: new Date(post.created),
-            }));
-        } else {
-            return [];
-        }
-    });
+    const [scheduledPosts, setScheduledPosts] = useState([]);
 
     useEffect(() => {
-        localStorage.setItem("scheduledPosts", JSON.stringify(scheduledPosts));
-    }, [scheduledPosts]);
+        fetch("/api/posts")
+            .then((res) => res.json())
+            .then((data) => setScheduledPosts(data));
+    }, []);
 
-    const addPost = (post) => {
-        setScheduledPosts([...scheduledPosts, post]);
-        setToast({ message: "Post scheduled successfully!", type: "success" });
+    const addPost = async (post) => {
+        try {
+            const res = await fetch("/api/posts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(post),
+            });
+            if (!res.ok) {
+                setToast({
+                    message: res.statusText,
+                    type: "error",
+                });
+                return;
+            }
+            const data = await res.json();
+
+            setScheduledPosts([...scheduledPosts, data.post]);
+            setToast({
+                message: "Post scheduled successfully!",
+                type: "success",
+            });
+        } catch (err) {
+            setToast({
+                message: err.message,
+                type: "error",
+            });
+        }
     };
 
-    const deletePost = (postId) => {
-        setScheduledPosts(scheduledPosts.filter((p) => p.id !== postId));
-        setToast({ message: "Post deleted successfully!", type: "success" });
+    const deletePost = async (postId) => {
+        try {
+            const res = await fetch(`/api/posts/${postId}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) {
+                setToast({
+                    message: res.statusText,
+                    type: "error",
+                });
+                return;
+            }
+            await res.json();
+
+            setScheduledPosts(scheduledPosts.filter((p) => p._id !== postId));
+            setToast({
+                message: "Post deleted successfully!",
+                type: "success",
+            });
+        } catch (err) {
+            setToast({
+                message: err.message,
+                type: "error",
+            });
+        }
     };
 
     return (
