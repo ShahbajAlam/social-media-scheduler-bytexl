@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import PostForm from "./components/PostForm";
 import PostList from "./components/PostList";
 import Toast from "./components/Toast";
+import { Route, Routes } from "react-router-dom";
+import DetailedPost from "./components/DetailedPost";
 
 const App = () => {
     const [toast, setToast] = useState(null);
@@ -73,21 +75,40 @@ const App = () => {
 
     return (
         <div className="min-h-screen">
-            <div className="header">
-                <h1>Social Media Scheduler</h1>
-                <p>Plan and schedule your social media content in one place</p>
-            </div>
-            <div className="content-container">
-                <PostForm onSubmit={addPost} />
-                <PostList posts={scheduledPosts} onDelete={deletePost} />
-            </div>
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <>
+                            <div className="header">
+                                <h1>Social Media Scheduler</h1>
+                                <p>
+                                    Plan and schedule your social media content
+                                    in one place
+                                </p>
+                            </div>
+                            <div className="content-container">
+                                <PostForm onSubmit={addPost} />
+                                <PostList
+                                    posts={scheduledPosts}
+                                    onDelete={deletePost}
+                                />
+                            </div>
+                            {toast && (
+                                <Toast
+                                    message={toast.message}
+                                    type={toast.type}
+                                    onClose={() => setToast(null)}
+                                />
+                            )}
+                        </>
+                    }
                 />
-            )}
+                <Route
+                    path="/post/:id"
+                    element={<DetailedPost posts={scheduledPosts} />}
+                />
+            </Routes>
         </div>
     );
 };

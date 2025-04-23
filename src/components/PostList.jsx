@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const PostList = ({ posts, onDelete }) => {
+    const navigate = useNavigate();
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -39,14 +41,7 @@ const PostList = ({ posts, onDelete }) => {
                                 <div className="post-content">
                                     {post.content}
                                 </div>
-                                {post.image && (
-                                    <div
-                                        className="post-image"
-                                        style={{
-                                            backgroundImage: `url(${post.image})`,
-                                        }}
-                                    />
-                                )}
+
                                 <div className="post-platforms">
                                     {post.platforms.map((p) => (
                                         <span className="platform-tag" key={p}>
@@ -58,6 +53,14 @@ const PostList = ({ posts, onDelete }) => {
                                     ))}
                                 </div>
                                 <div className="post-actions">
+                                    <button
+                                        className="explore-post-button"
+                                        onClick={() => {
+                                            navigate(`/post/${post._id}`);
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-compass"></i>
+                                    </button>
                                     <button
                                         className="delete-post-button"
                                         onClick={() => onDelete(post._id)}
