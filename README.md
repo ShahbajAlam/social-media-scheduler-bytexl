@@ -1,85 +1,20 @@
 ## Key Changes
 
-### 1. **API Integration for Fetching Posts**
+1.  ### **Routing with `react-router-dom`**
 
-In the previous version, posts were fetched from `localStorage`. Now, posts are fetched from the API using the following code in `useEffect`:
+    -   Introduced `react-router-dom` for seamless navigation.
+    -   Defined two main routes:
 
-```
-useEffect(() => {
-	fetch("/api/posts")
-        .then((res) => res.json())
-        .then((data) => setScheduledPosts(data));
-}, []);
-```
+        -   `/` – Displays the PostForm and PostList components.
+        -   `/post/:id` – Shows the detailed view of a selected post using the new `DetailedPost` component.
 
--   This calls the `GET /api/posts` endpoint to retrieve all scheduled posts when the component is first loaded.
--   The fetched data is then saved in the state `scheduledPosts`.
+2.  ### **New Component: `DetailedPost`**
 
-### 2. **Adding Posts via API**
+    -   Displays full details of a selected post, including title, content, image, platforms, scheduled time, and post ID.
+    -   Uses `useParams` to extract the post ID from the route.
+    -   Includes a “Go Back” button using `useNavigate` for user-friendly navigation.
 
-Previously, posts were added to `localStorage`. Now, posts are sent to the API for creation:
+3.  ### **Clickable Post Navigation**
 
-```
-const  addPost = async (post) => {
-	 try {
-		 const res = await  fetch("/api/posts",
-			 {
-				 method: "POST",
-				 headers:
-					 { "Content-Type": "application/json",
-	            },
-	            body: JSON.stringify(post),
-        });
-        if (!res.ok) {
-	         setToast({ message: res.statusText, type: "error",
-            }); return;
-        }
-        const data = await res.json();
-        setScheduledPosts([...scheduledPosts, data.post]);
-        setToast(
-	        { message: "Post scheduled successfully!",
-	        type: "success",
-        });
-    } catch (err) {
-	     setToast({ message: err.message, type: "error",
-        });
-    }
-};
-```
-
--   The `POST /api/posts` endpoint is used to create a new post.
--   On success, the new post is added to the `scheduledPosts` state and a success toast is displayed.
-
-### 3. **Deleting Posts via API**
-
-Post deletion previously used `localStorage`. Now, posts are deleted via the API:
-
-```
-const  deletePost = async (postId) => {
-	 try {
-		 const res = await  fetch(`/api/posts/${postId}`,
-			 { method: "DELETE",
-	      });
-	      if (!res.ok) {
-		      setToast({ message: res.statusText, type: "error",
-            }); return;
-        }
-        await res.json();
-        setScheduledPosts(scheduledPosts.filter((p) => p._id !== postId));
-        setToast(
-	        { message: "Post deleted successfully!",
-	        type: "success",
-        });
-    } catch (err) {
-	     setToast({ message: err.message, type: "error",
-        });
-    }
-};
-```
-
--   The `DELETE /api/posts/:id` endpoint is used to delete a post by its ID.
--   The post is removed from the `scheduledPosts` state after a successful deletion.
-
-### 4. **Field Update: `post.id` to `post._id`**
-
-The post ID field has been updated from `id` to `_id` to match the API response format. All references to `post.id` have been replaced with `post._id`.
+    -   In `PostList`, each post now includes a "compass" icon button.
+    -   Clicking the button navigates to the post’s detail page via `<NavLink to={`/post/${post.\_id}`}>`.
