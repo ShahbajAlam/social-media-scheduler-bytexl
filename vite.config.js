@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [react()],
     server: {
         proxy: {
-            "/api": "https://jcd5sf-3000.bytexl.dev",
+            "/api": "https://social-media-scheduler-bytexl.vercel.app",
         },
     },
 });
