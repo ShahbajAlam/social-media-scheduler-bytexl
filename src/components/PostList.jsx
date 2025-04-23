@@ -1,8 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const PostList = ({ posts, onDelete }) => {
-    const navigate = useNavigate();
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -53,14 +52,12 @@ const PostList = ({ posts, onDelete }) => {
                                     ))}
                                 </div>
                                 <div className="post-actions">
-                                    <button
+                                    <NavLink
+                                        to={`/post/${post._id}`}
                                         className="explore-post-button"
-                                        onClick={() => {
-                                            navigate(`/post/${post._id}`);
-                                        }}
                                     >
                                         <i className="fa-solid fa-compass"></i>
-                                    </button>
+                                    </NavLink>
                                     <button
                                         className="delete-post-button"
                                         onClick={() => onDelete(post._id)}
