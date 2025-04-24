@@ -1,15 +1,26 @@
 import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clearToast } from "../redux/toastSlice";
 
-const Toast = ({ message, type = "success", onClose }) => {
+const Toast = () => {
+    const toast = useSelector((state) => state.toast);
+    const dispatch = useDispatch();
+
     useEffect(() => {
+        if (!toast) return;
+
         const timeout = setTimeout(() => {
-            onClose();
+            dispatch(clearToast());
         }, 3000);
 
         return () => clearTimeout(timeout);
-    }, [onClose]);
+    }, [toast, dispatch]);
 
-    return <div className={`toast toast-${type} show`}>{message}</div>;
+    if (!toast) return null;
+
+    return (
+        <div className={`toast toast-${toast.type} show`}>{toast.message}</div>
+    );
 };
 
 export default Toast;

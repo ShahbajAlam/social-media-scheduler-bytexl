@@ -1,7 +1,13 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { deletePostById } from "../redux/postSlice";
+import { setToast } from "../redux/toastSlice";
 
-const PostList = ({ posts, onDelete }) => {
+const PostList = () => {
+    const dispatch = useDispatch();
+    const { data: posts } = useSelector((state) => state.posts);
+
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -10,12 +16,26 @@ const PostList = ({ posts, onDelete }) => {
         );
     }
 
+    const deletePost = async (postId) => {
+        try {
+            await dispatch(deletePostById(postId)).unwrap();
+            dispatch(
+                setToast({
+                    message: "Post deleted successfully!",
+                    type: "success",
+                })
+            );
+        } catch (err) {
+            dispatch(setToast({ message: err, type: "error" }));
+        }
+    };
+
     return (
         <div className="posts-container">
             <h2>Scheduled Posts</h2>
             <div className="posts-list-container">
                 <div id="postsList" className="posts-list">
-                    {posts
+                    {[...posts]
                         .sort(
                             (a, b) =>
                                 new Date(a.scheduledFor) -
@@ -60,7 +80,7 @@ const PostList = ({ posts, onDelete }) => {
                                     </NavLink>
                                     <button
                                         className="delete-post-button"
-                                        onClick={() => onDelete(post._id)}
+                                        onClick={() => deletePost(post._id)}
                                     >
                                         <i className="fas fa-trash-alt"></i>
                                     </button>

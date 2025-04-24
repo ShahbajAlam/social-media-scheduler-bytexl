@@ -1,9 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 
-const DetailedPost = ({ posts }) => {
+const DetailedPost = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { data: posts } = useSelector((state) => state.posts);
     const post = posts.find((p) => p._id === id);
 
     if (!post) {

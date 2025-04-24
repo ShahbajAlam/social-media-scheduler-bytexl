@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import ImageUpload from "./ImageUpload";
+import { useDispatch } from "react-redux";
+import { addNewPost } from "../redux/postSlice";
+import { setToast } from "../redux/toastSlice";
 
 const platformsList = ["twitter", "facebook", "instagram", "linkedin"];
 
-const PostForm = ({ onSubmit }) => {
+const PostForm = () => {
+    const dispatch = useDispatch();
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [date, setDate] = useState(getDefaultDate());
@@ -31,7 +36,7 @@ const PostForm = ({ onSubmit }) => {
         );
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title || !content || platforms.length === 0 || !date || !time) {
             alert("Please fill all fields");
@@ -57,13 +62,24 @@ const PostForm = ({ onSubmit }) => {
             created: new Date(),
         };
 
-        onSubmit(post);
-        setTitle("");
-        setContent("");
-        setImageData(null);
-        setPlatforms([]);
-        setDate(getDefaultDate());
-        setTime(getDefaultTime());
+        try {
+            await dispatch(addNewPost(post)).unwrap();
+            dispatch(
+                setToast({
+                    message: "Post scheduled successfully!",
+                    type: "success",
+                })
+            );
+            // reset form fields
+            setTitle("");
+            setContent("");
+            setImageData(null);
+            setPlatforms([]);
+            setDate(getDefaultDate());
+            setTime(getDefaultTime());
+        } catch (err) {
+            dispatch(setToast({ message: err, type: "error" }));
+        }
     };
 
     return (
