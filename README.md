@@ -1,85 +1,105 @@
-## Key Changes
+### Key Changes
+
+---
 
 ### 1. **API Integration for Fetching Posts**
 
-In the previous version, posts were fetched from `localStorage`. Now, posts are fetched from the API using the following code in `useEffect`:
+In the previous version, posts were fetched from `localStorage`. Now, posts are fetched from the API using the `GET /api/posts` endpoint. The component also manages a `loading` state during this process:
 
 ```
 useEffect(() => {
-	fetch("/api/posts")
-        .then((res) => res.json())
-        .then((data) => setScheduledPosts(data));
+    async function getPosts() {
+        try {
+            setLoading(true);
+            const res = await fetch("/api/posts");
+            const data = await res.json();
+            setScheduledPosts(data);
+        } catch (err) {
+            setToast({ message: err.message, type: "error" });
+        } finally {
+            setLoading(false);
+        }
+    }
+    getPosts();
 }, []);
+
 ```
 
--   This calls the `GET /api/posts` endpoint to retrieve all scheduled posts when the component is first loaded.
--   The fetched data is then saved in the state `scheduledPosts`.
+-   Posts are now retrieved from the backend.
+-   A loading spinner or visual indicator can be shown while posts are being fetched.
+
+---
 
 ### 2. **Adding Posts via API**
 
-Previously, posts were added to `localStorage`. Now, posts are sent to the API for creation:
+Posts are added using the `POST /api/posts` endpoint. The `loading` state is also managed during the post creation process.
 
 ```
-const  addPost = async (post) => {
-	 try {
-		 const res = await  fetch("/api/posts",
-			 {
-				 method: "POST",
-				 headers:
-					 { "Content-Type": "application/json",
-	            },
-	            body: JSON.stringify(post),
+const addPost = async (post) => {
+    try {
+        setLoading(true);
+        const res = await fetch("/api/posts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(post),
         });
         if (!res.ok) {
-	         setToast({ message: res.statusText, type: "error",
-            }); return;
+            setToast({ message: res.statusText, type: "error" });
+            return;
         }
         const data = await res.json();
         setScheduledPosts([...scheduledPosts, data.post]);
-        setToast(
-	        { message: "Post scheduled successfully!",
-	        type: "success",
-        });
+        setToast({ message: "Post scheduled successfully!", type: "success" });
     } catch (err) {
-	     setToast({ message: err.message, type: "error",
-        });
+        setToast({ message: err.message, type: "error" });
+    } finally {
+        setLoading(false);
     }
 };
 ```
 
--   The `POST /api/posts` endpoint is used to create a new post.
--   On success, the new post is added to the `scheduledPosts` state and a success toast is displayed.
+-   A loading state is triggered during the entire asynchronous operation.
+-   On success, the post is appended to the current state.
+-   Appropriate success or error toast messages are displayed.
+
+---
 
 ### 3. **Deleting Posts via API**
 
-Post deletion previously used `localStorage`. Now, posts are deleted via the API:
+Posts are deleted using the `DELETE /api/posts/:id` endpoint, and the `loading` state is toggled during the process:
 
 ```
-const  deletePost = async (postId) => {
-	 try {
-		 const res = await  fetch(`/api/posts/${postId}`,
-			 { method: "DELETE",
-	      });
-	      if (!res.ok) {
-		      setToast({ message: res.statusText, type: "error",
-            }); return;
+const deletePost = async (postId) => {
+    try {
+        setLoading(true);
+        const res = await fetch(`/api/posts/${postId}`, {
+            method: "DELETE",
+        });
+        if (!res.ok) {
+            setToast({ message: res.statusText, type: "error" });
+            return;
         }
         await res.json();
         setScheduledPosts(scheduledPosts.filter((p) => p._id !== postId));
-        setToast(
-	        { message: "Post deleted successfully!",
-	        type: "success",
-        });
+        setToast({ message: "Post deleted successfully!", type: "success" });
     } catch (err) {
-	     setToast({ message: err.message, type: "error",
-        });
+        setToast({ message: err.message, type: "error" });
+    } finally {
+        setLoading(false);
     }
 };
+
 ```
 
--   The `DELETE /api/posts/:id` endpoint is used to delete a post by its ID.
--   The post is removed from the `scheduledPosts` state after a successful deletion.
+-   The post is removed from the UI only after a successful delete response.
+-   During deletion, the app displays a loading indicator.
 
-### 4. **Field Update: `post.id` to `post._id`**
+---
 
-The post ID field has been updated from `id` to `_id` to match the API response format. All references to `post.id` have been replaced with `post._id`.
+### 4. **Field Update: `post.id` → `post._id`**
+
+To align with the API's response structure, the unique identifier of posts has been updated:
+
+-   All references of `post.id` have been replaced with `post._id`.
+
+This ensures correct post identification when performing actions like view, delete, or update.
