@@ -126,6 +126,233 @@ initial-scale=1.0 ensures no zoom is applied when the page loads.
 
 **Why it's important**: This boosts your site's social media presence with attractive previews.
 
+<hr/>
+
+# Understanding the stylesheet
+
+## 🧱 Global Styling Properties
+
+### 1. **`box-sizing: border-box`**
+
+-   **What**: Includes padding and border in the element’s total width/height.
+    
+-   **Why**: Prevents layout issues when adding padding or borders.
+    
+-   **How**: Ensures elements size predictably, avoiding overflow in flexible or grid layouts.
+    
+
+### 2. **`margin` and `padding`**
+
+-   **What**: Margin sets space outside elements; padding sets space inside.
+    
+-   **Why**: Removing defaults ensures a clean, controlled layout.
+    
+-   **How**: You later reintroduce spacing where it's contextually needed.
+    
+
+----------
+
+## 🎨 Typography and Font Properties
+
+### 3. **`font-family`**
+
+-   **What**: Specifies a prioritized list of fonts.
+    
+-   **Why**: Improves readability and fallback control.
+    
+-   **How**: Starts with “Segoe UI” and cascades through familiar sans-serif fonts for consistency across devices.
+    
+
+### 4. **`line-height`**
+
+-   **What**: Controls the vertical spacing between lines of text.
+    
+-   **Why**: Enhances readability and visual comfort.
+    
+-   **How**: `line-height: 1.5` is a commonly accepted standard for legibility.
+    
+
+----------
+
+## 🧩 Box and Background Properties
+
+### 5. **`background-color`**
+
+-   **What**: Sets the background color of an element.
+    
+-   **Why**: Provides visual hierarchy and contrast (e.g., soft gray for background vs white cards).
+    
+-   **How**: Different shades (`#f9fafb`, `#f3f4f6`, `#1e40af`) guide user attention and section separation.
+    
+
+### 6. **`border`**
+
+-   **What**: Defines the border style, width, and color.
+    
+-   **Why**: Used to subtly frame content or indicate interactions (input focus, card boundaries).
+    
+-   **How**: Light colors like `#e5e7eb` and `#d1d5db` give a minimalistic appearance without clutter.
+    
+
+### 7. **`border-radius`**
+
+-   **What**: Rounds the corners of elements.
+    
+-   **Why**: Gives a softer, modern look that aligns with UI design trends.
+    
+-   **How**: Cards, buttons, and inputs use different radii (e.g., `0.375rem`, `0.5rem`) for visual consistency.
+    
+
+----------
+
+## 📐 Dimension and Layout Properties
+
+### 8. **`min-height`, `width`, and `height`**
+
+-   **What**: Set minimum size or control element proportions.
+    
+-   **Why**: Ensures form containers and image areas don't collapse.
+    
+-   **How**: `min-height: 100vh` ensures full screen; `width: 100%` makes inputs fluid.
+    
+
+### 9. **`max-width`**
+
+-   **What**: Restricts element width to improve readability.
+    
+-   **Why**: Prevents content from stretching on wide screens.
+    
+-   **How**: `max-width: 1200px` on containers centers content and adds focus.
+    
+
+----------
+
+## 📦 Display and Layout Models
+
+### 10. **`display: grid` and `display: flex`**
+
+-   **What**: Control layout of children elements.
+    
+-   **Why**: Grid is great for 2D layouts; Flex is ideal for linear alignment and responsiveness.
+    
+-   **How**: Grid is used for main containers; Flex is used for forms, buttons, and image previews.
+    
+
+### 11. **`gap`**
+
+-   **What**: Sets spacing between grid or flex items.
+    
+-   **Why**: Avoids margin hacks and maintains alignment integrity.
+    
+-   **How**: Used in `.content-container`, `.platform-selector`, and `.date-time-container` to separate elements evenly.
+    
+
+----------
+
+## 📲 Interaction and Feedback Properties
+
+### 12. **`transition`**
+
+-   **What**: Animates CSS property changes smoothly.
+    
+-   **Why**: Enhances user experience by avoiding abrupt changes.
+    
+-   **How**: Applied to `background-color`, `border-color`, and `transform` for hover/focus effects.
+    
+
+### 13. **`cursor: pointer`**
+
+-   **What**: Changes the mouse pointer to indicate interactivity.
+    
+-   **Why**: Provides a visual cue that the element is clickable.
+    
+-   **How**: Used on buttons, tags, and upload areas.
+    
+
+### 14. **`:hover`, `:focus`, and pseudo-classes**
+
+-   **What**: Define style changes on interaction.
+    
+-   **Why**: Improves accessibility and usability by providing state-based feedback.
+    
+-   **How**: Borders and shadows change on focus; backgrounds change on hover.
+    
+
+----------
+
+## 📸 Image Styling Properties
+
+### 15. **`background-size: cover` & `background-position: center`**
+
+-   **What**: Ensures background images fill the area and are centered.
+    
+-   **Why**: Prevents distortion and focuses on the main part of the image.
+    
+-   **How**: Used in `.image-preview` and `.post-image` for consistent image display.
+    
+
+### 16. **`content`**
+
+-   **What**: Used in pseudo-elements to inject textual or graphical content.
+    
+-   **Why**: Helpful for placeholder messages or dynamic feedback.
+    
+-   **How**: Shows “No image selected” unless an image is present.
+    
+
+----------
+
+## 📋 Text and Button Styling
+
+### 17. **`font-weight`, `font-size`, `text-align`, and `color`**
+
+-   **What**: Style headings, paragraphs, labels, and buttons.
+    
+-   **Why**: Creates a clear visual hierarchy and call-to-action elements.
+    
+-   **How**: Stronger weights and brighter colors for titles; muted tones for descriptions.
+    
+
+----------
+
+## 🧵 Positioning and Z-Index
+
+### 18. **`position: fixed` and `z-index`**
+
+-   **What**: Positions elements relative to the viewport and layering order.
+    
+-   **Why**: Toast notifications need to float above the UI, regardless of scroll.
+    
+-   **How**: Used with translate transforms and z-index 1000 for proper stack order.
+    
+
+----------
+
+## 🌀 Keyframe Animations
+
+### 19. **`@keyframes`**
+
+-   **What**: Defines named animation sequences.
+    
+-   **Why**: Adds motion to entrances and content updates.
+    
+-   **How**: `fadeIn`, `fadeInUp`, and `bounceIn` give life to form areas and post cards.
+    
+
+----------
+
+## 🎛 Media Query
+
+### 20. **`@media`**
+
+-   **What**: Applies styles based on viewport width.
+    
+-   **Why**: Enables responsive design by adjusting grid columns at 768px.
+    
+-   **How**: Ensures single-column on small screens and two-column on tablets/desktops.
+
+
+<hr/>
 
 # Understanding the script
 
