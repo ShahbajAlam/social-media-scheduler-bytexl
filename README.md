@@ -1,20 +1,100 @@
-## Key Changes
+## Refactoring the Social Media Scheduler App Using Custom Hooks
 
-1.  ### **Routing with `react-router-dom`**
+### 🛠 Project Context
 
-    -   Introduced `react-router-dom` for seamless navigation.
-    -   Defined two main routes:
+Originally, the Social Media Scheduler app was built with:
 
-        -   `/` – Displays the PostForm and PostList components.
-        -   `/post/:id` – Shows the detailed view of a selected post using the new `DetailedPost` component.
+-   State management (`useState`) directly inside `App.jsx`
+-   API calls (`fetch`) inside `useEffect` or inside button handlers.
+-   Delete and add operations tightly coupled with the main component logic.
+-   Loading states global or not isolated properly.
 
-2.  ### **New Component: `DetailedPost`**
+This approach worked for a small-scale project, but as the app grew:
 
-    -   Displays full details of a selected post, including title, content, image, platforms, scheduled time, and post ID.
-    -   Uses `useParams` to extract the post ID from the route.
-    -   Includes a “Go Back” button using `useNavigate` for user-friendly navigation.
+-   The `App.jsx` file became larger and harder to read.
+-   Reusing logic between different parts became difficult.
+-   Error handling was duplicated.
+-   Managing per-action loading states (e.g., deleting a single post) was messy.
 
-3.  ### **Clickable Post Navigation**
+<hr>
 
-    -   In `PostList`, each post now includes a "compass" icon button.
-    -   Clicking the button navigates to the post’s detail page via `<NavLink to={`/post/${post.\_id}`}>`.
+### 🎯 What We Changed
+
+We refactored the app by introducing three custom hooks:
+
+| Hook              | Purpose                        | Location               |
+| ----------------- | ------------------------------ | ---------------------- |
+| **useFetchPosts** | Fetch scheduled posts from API | hooks/useFetchPosts.js |
+| **useAddPost**    | Add a new post via API         | hooks/useAddPost.js    |
+| **useDeletePost** | Delete a specific post via API | hooks/useDeletePost.js |
+
+<hr>
+
+### ✨ Detailed Changes and Why
+
+#### 1. **Fetching Posts: `useFetchPosts`**
+
+#### What Was Before:
+
+-   In `App.jsx`, there was a `useEffect` making a `fetch('/api/posts')` call.
+-   `useState` for posts was directly tied to App logic.
+-   No separate error handling logic for fetch failures.
+
+#### What We Did:
+
+-   Moved the fetching logic into a **dedicated hook** called `useFetchPosts`.
+-   Hook now manages `posts`, `loading`, and `error` internally.
+-   Returned `setPosts` so that posts list can still be updated (e.g., after adding or deleting).
+
+#### Why:
+
+-   **Cleaner App.jsx** — removed fetch clutter.
+-   **Better reusability** — if another page needed posts, `useFetchPosts` could be reused directly.
+-   **Centralized error handling** for fetching posts.
+
+<hr>
+
+### 2. **Adding a Post: `useAddPost`**
+
+#### What Was Before:
+
+-   The `addPost` function was in `App.jsx`.
+-   Inside it, `fetch('/api/posts', POST)` was written inline.
+-   After adding, updating `scheduledPosts` was handled directly inside the same function.
+
+#### What We Did:
+
+-   Extracted `addPost` into `useAddPost(setPosts, setToast)`.
+-   The hook handles:
+    -   Making the POST request.
+    -   Updating the posts list.
+    -   Triggering appropriate toasts for success and failure.
+
+#### Why:
+
+-   **Separation of responsibilities** — App.jsx only calls `addPost(post)` without worrying about fetch details.
+-   **Consistency** — All API interactions now handle errors and success messages uniformly.
+-   **Future extensibility** — Easy to add retries, validations, etc., inside the hook without touching App logic.
+
+<hr>
+
+### 3. **Deleting a Post: `useDeletePost`**
+
+#### What Was Before:
+
+-   `deletePost` was a direct async function inside `App.jsx`.
+-   There was no per-post loading.
+
+#### What We Did:
+
+-   Created `useDeletePost(setPosts, setToast)`.
+-   Inside `useDeletePost`:
+    -   Introduced `deletingPostId` to track **which** post is being deleted.
+    -   Only that post's button shows a loading spinner.
+    -   On success, the post is removed from local posts list and toast is shown.
+
+#### Why:
+
+-   **Per-post UX improvement** — user sees spinner only on the post being deleted.
+-   **Simplified App logic** — no more managing `deletingPostId` manually inside App.jsx.
+-   **Error-safe deletion** — if API fails, appropriate message is shown without app breaking.
