@@ -3,7 +3,7 @@ import ImageUpload from "./ImageUpload";
 
 const platformsList = ["twitter", "facebook", "instagram", "linkedin"];
 
-const PostForm = ({ onSubmit }) => {
+const PostForm = ({ onSubmit, loadingAtAdd }) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [date, setDate] = useState(getDefaultDate());
@@ -163,7 +163,11 @@ const PostForm = ({ onSubmit }) => {
                     </div>
 
                     <button type="submit" className="schedule-button">
-                        Schedule Post
+                        {loadingAtAdd ? (
+                            <i className="fa-solid fa-spinner"></i>
+                        ) : (
+                            "Schedule Post"
+                        )}
                     </button>
                 </form>
             </div>

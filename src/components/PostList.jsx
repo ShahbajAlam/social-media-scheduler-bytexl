@@ -1,7 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import Toast from "./Toast";
 
-const PostList = ({ posts, onDelete }) => {
+const PostList = ({ posts, error, onDelete, loadingAtDelete }) => {
+    if (error) return <Toast type="error" message={error} />;
+
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -61,8 +64,14 @@ const PostList = ({ posts, onDelete }) => {
                                     <button
                                         className="delete-post-button"
                                         onClick={() => onDelete(post._id)}
+                                        disabled={loadingAtDelete.flag}
                                     >
-                                        <i className="fas fa-trash-alt"></i>
+                                        {loadingAtDelete.flag &&
+                                        loadingAtDelete.id === post._id ? (
+                                            <i className="fa-solid fa-spinner"></i>
+                                        ) : (
+                                            <i className="fas fa-trash-alt"></i>
+                                        )}
                                     </button>
                                 </div>
                             </div>
