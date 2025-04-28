@@ -1,8 +1,10 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { usePosts } from "../context/PostContext";
 
-const DetailedPost = ({ posts }) => {
+const DetailedPost = () => {
     const { id } = useParams();
+    const { posts } = usePosts();
     const navigate = useNavigate();
     const post = posts.find((p) => p._id === id);
 

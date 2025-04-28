@@ -1,22 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import PostForm from "./components/PostForm";
 import PostList from "./components/PostList";
 import Toast from "./components/Toast";
 import { Route, Routes } from "react-router-dom";
 import DetailedPost from "./components/DetailedPost";
-import useFetchPosts from "./hooks/useFetchPosts";
-import useAddPost from "./hooks/useAddPost";
-import useDeletePost from "./hooks/useDeletePost";
+import { usePosts } from "./context/PostContext";
 
 const App = () => {
-    const [toast, setToast] = useState(null);
-    const { loading: loadingAtFetch, posts, error, setPosts } = useFetchPosts();
-    const { addPost, loading: loadingAtAdd } = useAddPost(setPosts, setToast);
-    const { deletePost, loading: loadingAtDelete } = useDeletePost(
-        posts,
-        setPosts,
-        setToast
-    );
+    const { toast, loadingAtFetch } = usePosts();
 
     return (
         <div className="min-h-screen">
@@ -33,35 +24,18 @@ const App = () => {
                                 </p>
                             </div>
                             <div className="content-container">
-                                <PostForm
-                                    onSubmit={addPost}
-                                    loadingAtAdd={loadingAtAdd}
-                                />
+                                <PostForm />
                                 {loadingAtFetch ? (
                                     <div className="loading"></div>
                                 ) : (
-                                    <PostList
-                                        onDelete={deletePost}
-                                        posts={posts}
-                                        error={error}
-                                        loadingAtDelete={loadingAtDelete}
-                                    />
+                                    <PostList />
                                 )}
                             </div>
-                            {toast && (
-                                <Toast
-                                    message={toast.message}
-                                    type={toast.type}
-                                    onClose={() => setToast(null)}
-                                />
-                            )}
+                            {toast && <Toast />}
                         </>
                     }
                 />
-                <Route
-                    path="/post/:id"
-                    element={<DetailedPost posts={posts} />}
-                />
+                <Route path="/post/:id" element={<DetailedPost />} />
             </Routes>
         </div>
     );

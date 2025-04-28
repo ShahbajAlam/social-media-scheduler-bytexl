@@ -4,9 +4,12 @@ import React from "react";
 import App from "./App.jsx";
 import "font-awesome/css/font-awesome.min.css";
 import { BrowserRouter } from "react-router-dom";
+import { PostProvider } from "./context/PostContext.jsx";
 
 createRoot(document.getElementById("root")).render(
     <BrowserRouter>
-        <App />
+        <PostProvider>
+            <App />
+        </PostProvider>
     </BrowserRouter>
 );

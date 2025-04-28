@@ -1,8 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import Toast from "./Toast";
+import { usePosts } from "../context/PostContext";
 
-const PostList = ({ posts, error, onDelete, loadingAtDelete }) => {
+const PostList = () => {
+    const { error, posts, deletePost, loadingAtDelete } = usePosts();
+
     if (error) return <Toast type="error" message={error} />;
 
     if (posts.length === 0) {
@@ -63,7 +66,7 @@ const PostList = ({ posts, error, onDelete, loadingAtDelete }) => {
                                     </NavLink>
                                     <button
                                         className="delete-post-button"
-                                        onClick={() => onDelete(post._id)}
+                                        onClick={() => deletePost(post._id)}
                                         disabled={loadingAtDelete.flag}
                                     >
                                         {loadingAtDelete.flag &&
