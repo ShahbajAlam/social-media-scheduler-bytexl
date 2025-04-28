@@ -1,100 +1,32 @@
-## Refactoring the Social Media Scheduler App Using Custom Hooks
+## Refactoring Social Media Scheduler App with Context API
 
-### 🛠 Project Context
+### 🛠 Project Context (Before Refactor)
 
-Originally, the Social Media Scheduler app was built with:
+Initially, the project structure was based on **prop drilling**:
 
--   State management (`useState`) directly inside `App.jsx`
--   API calls (`fetch`) inside `useEffect` or inside button handlers.
--   Delete and add operations tightly coupled with the main component logic.
--   Loading states global or not isolated properly.
+-   **State management** (`posts`, `toast`, `loading`, etc.) was handled inside `App.jsx`.
+-   **Actions** like `addPost` and `deletePost` were passed down to components (`PostForm`, `PostList`) via props.
+-   **Loading states** (`loadingAtAdd`, `loadingAtDelete`, etc.) were passed separately.
+-   **Toast** visibility and control were manually passed to `Toast.jsx`.
+-   Each component depended heavily on parent props to work correctly.
 
-This approach worked for a small-scale project, but as the app grew:
+✅ This worked for a smaller codebase, but introduced challenges:
 
--   The `App.jsx` file became larger and harder to read.
--   Reusing logic between different parts became difficult.
--   Error handling was duplicated.
--   Managing per-action loading states (e.g., deleting a single post) was messy.
-
-<hr>
-
-### 🎯 What We Changed
-
-We refactored the app by introducing three custom hooks:
-
-| Hook              | Purpose                        | Location               |
-| ----------------- | ------------------------------ | ---------------------- |
-| **useFetchPosts** | Fetch scheduled posts from API | hooks/useFetchPosts.js |
-| **useAddPost**    | Add a new post via API         | hooks/useAddPost.js    |
-| **useDeletePost** | Delete a specific post via API | hooks/useDeletePost.js |
+-   Components became tightly **coupled** with `App.jsx`.
+-   **Reusability** across new pages or new features (like edit, bulk delete) was difficult.
+-   **Scaling issues**: every new state/action would increase props and complexity.
 
 <hr>
 
-### ✨ Detailed Changes and Why
+To solve these issues, we migrated the project to use **React Context API** for **global state management**.
 
-#### 1. **Fetching Posts: `useFetchPosts`**
+### ✨ Key Changes After Refactor
 
-#### What Was Before:
-
--   In `App.jsx`, there was a `useEffect` making a `fetch('/api/posts')` call.
--   `useState` for posts was directly tied to App logic.
--   No separate error handling logic for fetch failures.
-
-#### What We Did:
-
--   Moved the fetching logic into a **dedicated hook** called `useFetchPosts`.
--   Hook now manages `posts`, `loading`, and `error` internally.
--   Returned `setPosts` so that posts list can still be updated (e.g., after adding or deleting).
-
-#### Why:
-
--   **Cleaner App.jsx** — removed fetch clutter.
--   **Better reusability** — if another page needed posts, `useFetchPosts` could be reused directly.
--   **Centralized error handling** for fetching posts.
-
-<hr>
-
-### 2. **Adding a Post: `useAddPost`**
-
-#### What Was Before:
-
--   The `addPost` function was in `App.jsx`.
--   Inside it, `fetch('/api/posts', POST)` was written inline.
--   After adding, updating `scheduledPosts` was handled directly inside the same function.
-
-#### What We Did:
-
--   Extracted `addPost` into `useAddPost(setPosts, setToast)`.
--   The hook handles:
-    -   Making the POST request.
-    -   Updating the posts list.
-    -   Triggering appropriate toasts for success and failure.
-
-#### Why:
-
--   **Separation of responsibilities** — App.jsx only calls `addPost(post)` without worrying about fetch details.
--   **Consistency** — All API interactions now handle errors and success messages uniformly.
--   **Future extensibility** — Easy to add retries, validations, etc., inside the hook without touching App logic.
-
-<hr>
-
-### 3. **Deleting a Post: `useDeletePost`**
-
-#### What Was Before:
-
--   `deletePost` was a direct async function inside `App.jsx`.
--   There was no per-post loading.
-
-#### What We Did:
-
--   Created `useDeletePost(setPosts, setToast)`.
--   Inside `useDeletePost`:
-    -   Introduced `deletingPostId` to track **which** post is being deleted.
-    -   Only that post's button shows a loading spinner.
-    -   On success, the post is removed from local posts list and toast is shown.
-
-#### Why:
-
--   **Per-post UX improvement** — user sees spinner only on the post being deleted.
--   **Simplified App logic** — no more managing `deletingPostId` manually inside App.jsx.
--   **Error-safe deletion** — if API fails, appropriate message is shown without app breaking.
+| Area                | Before                                                 | After (Using Context API)                              |
+| :------------------ | :----------------------------------------------------- | :----------------------------------------------------- |
+| Posts State         | Managed inside App.jsx and passed to PostList          | Managed in PostContext, accessed anywhere via usePosts |
+| Add Post            | addPost passed via props to PostForm                   | PostForm calls addPost directly from usePosts          |
+| Delete Post         | deletePost passed via props to PostList                | PostList calls deletePost directly from usePosts       |
+| Loading States      | loadingAtAdd, loadingAtDelete passed as props          | Available globally in Context                          |
+| Toast Notifications | Controlled manually in App.jsx and passed to Toast.jsx | Toast reads toast state directly from Context          |
+| Detailed Post View  | Received posts as props                                | Uses usePosts to access posts directly                 |
