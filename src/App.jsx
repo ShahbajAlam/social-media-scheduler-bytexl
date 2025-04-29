@@ -7,15 +7,30 @@ import DetailedPost from "./components/DetailedPost";
 
 const App = () => {
     const [toast, setToast] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [scheduledPosts, setScheduledPosts] = useState([]);
 
     useEffect(() => {
-        fetch("/api/posts")
-            .then((res) => res.json())
-            .then((data) => setScheduledPosts(data));
+        async function getPosts() {
+            try {
+                setLoading(true);
+                const res = await fetch("/api/posts");
+                const data = await res.json();
+                setScheduledPosts(data);
+            } catch (err) {
+                setToast({
+                    message: err.message,
+                    type: "error",
+                });
+            } finally {
+                setLoading(false);
+            }
+        }
+        getPosts();
     }, []);
 
     const addPost = async (post) => {
+        setLoading(true);
         try {
             const res = await fetch("/api/posts", {
                 method: "POST",
@@ -43,10 +58,13 @@ const App = () => {
                 message: err.message,
                 type: "error",
             });
+        } finally {
+            setLoading(false);
         }
     };
 
     const deletePost = async (postId) => {
+        setLoading(true);
         try {
             const res = await fetch(`/api/posts/${postId}`, {
                 method: "DELETE",
@@ -70,6 +88,8 @@ const App = () => {
                 message: err.message,
                 type: "error",
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -89,10 +109,14 @@ const App = () => {
                             </div>
                             <div className="content-container">
                                 <PostForm onSubmit={addPost} />
-                                <PostList
-                                    posts={scheduledPosts}
-                                    onDelete={deletePost}
-                                />
+                                {loading ? (
+                                    <div className="loading"></div>
+                                ) : (
+                                    <PostList
+                                        posts={scheduledPosts}
+                                        onDelete={deletePost}
+                                    />
+                                )}
                             </div>
                             {toast && (
                                 <Toast
