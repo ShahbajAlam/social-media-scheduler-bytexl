@@ -1,97 +1,12 @@
-import React, { useState, useEffect } from "react";
 import PostForm from "./components/PostForm";
 import PostList from "./components/PostList";
 import Toast from "./components/Toast";
 import { Route, Routes } from "react-router-dom";
 import DetailedPost from "./components/DetailedPost";
+import { usePosts } from "./contexts/PostContext";
 
 const App = () => {
-    const [toast, setToast] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [scheduledPosts, setScheduledPosts] = useState([]);
-
-    useEffect(() => {
-        async function getPosts() {
-            try {
-                setLoading(true);
-                const res = await fetch("/api/posts");
-                const data = await res.json();
-                setScheduledPosts(data);
-            } catch (err) {
-                setToast({
-                    message: err.message,
-                    type: "error",
-                });
-            } finally {
-                setLoading(false);
-            }
-        }
-        getPosts();
-    }, []);
-
-    const addPost = async (post) => {
-        setLoading(true);
-        try {
-            const res = await fetch("/api/posts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(post),
-            });
-            if (!res.ok) {
-                setToast({
-                    message: res.statusText,
-                    type: "error",
-                });
-                return;
-            }
-            const data = await res.json();
-
-            setScheduledPosts([...scheduledPosts, data.post]);
-            setToast({
-                message: "Post scheduled successfully!",
-                type: "success",
-            });
-        } catch (err) {
-            setToast({
-                message: err.message,
-                type: "error",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const deletePost = async (postId) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/posts/${postId}`, {
-                method: "DELETE",
-            });
-            if (!res.ok) {
-                setToast({
-                    message: res.statusText,
-                    type: "error",
-                });
-                return;
-            }
-            await res.json();
-
-            setScheduledPosts(scheduledPosts.filter((p) => p._id !== postId));
-            setToast({
-                message: "Post deleted successfully!",
-                type: "success",
-            });
-        } catch (err) {
-            setToast({
-                message: err.message,
-                type: "error",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { loading, toast } = usePosts();
 
     return (
         <div className="min-h-screen">
@@ -108,30 +23,18 @@ const App = () => {
                                 </p>
                             </div>
                             <div className="content-container">
-                                <PostForm onSubmit={addPost} />
+                                <PostForm />
                                 {loading ? (
                                     <div className="loading"></div>
                                 ) : (
-                                    <PostList
-                                        posts={scheduledPosts}
-                                        onDelete={deletePost}
-                                    />
+                                    <PostList />
                                 )}
                             </div>
-                            {toast && (
-                                <Toast
-                                    message={toast.message}
-                                    type={toast.type}
-                                    onClose={() => setToast(null)}
-                                />
-                            )}
+                            {toast && <Toast />}
                         </>
                     }
                 />
-                <Route
-                    path="/post/:id"
-                    element={<DetailedPost posts={scheduledPosts} />}
-                />
+                <Route path="/post/:id" element={<DetailedPost />} />
             </Routes>
         </div>
     );

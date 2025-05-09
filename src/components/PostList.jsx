@@ -1,7 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { usePosts } from "../contexts/PostContext";
 
-const PostList = ({ posts, onDelete }) => {
+const PostList = () => {
+    const { scheduledPosts: posts, deletePost } = usePosts();
+
     if (posts.length === 0) {
         return (
             <div id="emptyPostsMessage" className="empty-posts-message">
@@ -60,7 +63,7 @@ const PostList = ({ posts, onDelete }) => {
                                     </NavLink>
                                     <button
                                         className="delete-post-button"
-                                        onClick={() => onDelete(post._id)}
+                                        onClick={() => deletePost(post._id)}
                                     >
                                         <i className="fas fa-trash-alt"></i>
                                     </button>

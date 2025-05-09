@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ImageUpload from "./ImageUpload";
+import { usePosts } from "../contexts/PostContext";
 
 const platformsList = ["twitter", "facebook", "instagram", "linkedin"];
 
-const PostForm = ({ onSubmit }) => {
+const PostForm = () => {
+    const { addPost } = usePosts();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [date, setDate] = useState(getDefaultDate());
@@ -57,7 +59,7 @@ const PostForm = ({ onSubmit }) => {
             created: new Date(),
         };
 
-        onSubmit(post);
+        addPost(post);
         setTitle("");
         setContent("");
         setImageData(null);
