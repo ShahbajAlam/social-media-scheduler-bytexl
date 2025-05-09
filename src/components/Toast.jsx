@@ -1,15 +1,20 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { usePosts } from "../contexts/PostContext";
 
-const Toast = ({ message, type = "success", onClose }) => {
+const Toast = () => {
+    const { toast, setToast } = usePosts();
+
     useEffect(() => {
         const timeout = setTimeout(() => {
-            onClose();
+            setToast(null);
         }, 3000);
 
         return () => clearTimeout(timeout);
-    }, [onClose]);
+    }, [setToast]);
 
-    return <div className={`toast toast-${type} show`}>{message}</div>;
+    return (
+        <div className={`toast toast-${toast.type} show`}>{toast.message}</div>
+    );
 };
 
 export default Toast;
