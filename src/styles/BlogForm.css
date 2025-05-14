@@ -1,0 +1,25 @@
+form {
+    width: 90%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+input,
+textarea {
+    margin: 10px 0;
+    padding: 8px;
+}
+button {
+    background: #61dafb;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+@media (min-width: 992px) {
+    form {
+        width: 60%;
+        max-width: 900px;
+    }
+}

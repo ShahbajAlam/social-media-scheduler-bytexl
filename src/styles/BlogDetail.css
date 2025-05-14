@@ -1,0 +1,20 @@
+.blog-detail {
+    width: 90%;
+    margin: 10px auto;
+}
+
+.edit-post {
+    background-color: #6c9c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+@media (min-width: 992px) {
+    .blog-detail {
+        width: 60%;
+        max-width: 900px;
+    }
+}
