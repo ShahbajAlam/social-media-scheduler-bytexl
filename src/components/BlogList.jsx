@@ -12,6 +12,14 @@ const BlogList = ({ posts, setPosts }) => {
         setShowModal(false);
     };
 
+    if (posts.length === 0) {
+        return (
+            <h2 style={{ textAlign: "center" }}>
+                No posts yet, start writing your first blog...
+            </h2>
+        );
+    }
+
     return (
         <>
             <input
