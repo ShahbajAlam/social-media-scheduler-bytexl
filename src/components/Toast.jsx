@@ -9,7 +9,10 @@ const Toast = () => {
             setToast(null);
         }, 3000);
 
-        return () => clearTimeout(timeout);
+        return () => {
+            console.log("setTimeout is cleared after 3 seconds");
+            clearTimeout(timeout);
+        };
     }, [setToast]);
 
     return (

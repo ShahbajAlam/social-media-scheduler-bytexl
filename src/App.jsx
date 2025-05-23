@@ -4,9 +4,14 @@ import Toast from "./components/Toast";
 import { Route, Routes } from "react-router-dom";
 import DetailedPost from "./components/DetailedPost";
 import { usePosts } from "./contexts/PostContext";
+import { useEffect } from "react";
 
 const App = () => {
     const { loadingAtFetch, toast } = usePosts();
+
+    useEffect(() => {
+        console.log("This will log twice in StrictMode in dev!");
+    }, []);
 
     return (
         <div className="min-h-screen">

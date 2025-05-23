@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDebugValue } from "react";
 
 const useFetchPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -17,6 +17,7 @@ const useFetchPosts = () => {
                 const data = await res.json();
                 setPosts(data);
             } catch (err) {
+                console.error("API error : ", err);
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -25,6 +26,8 @@ const useFetchPosts = () => {
 
         fetchPosts();
     }, []);
+
+    useDebugValue(loading ? "Loading..." : `Loaded ${posts.length} posts`);
 
     return { posts, loading, error, setPosts };
 };

@@ -7,9 +7,11 @@ import { BrowserRouter } from "react-router-dom";
 import { PostProvider } from "./contexts/PostContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-    <PostProvider>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    </PostProvider>
+    <React.StrictMode>
+        <PostProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </PostProvider>
+    </React.StrictMode>
 );
