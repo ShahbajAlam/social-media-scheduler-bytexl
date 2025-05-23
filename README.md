@@ -1,100 +1,125 @@
-## Refactoring the Social Media Scheduler App Using Custom Hooks
+## Best Practices and Debugging in real-world React apps
 
-### 🛠 Project Context
+In modern React development, ensuring application performance and maintainability is just as important as building features. This guide provides an overview of the tools and best practices we’ve integrated into our project to support efficient debugging and render optimization. By leveraging React’s built-in features such as `StrictMode`, `useDebugValue`, and the React Profiler, along with careful side effect management, we aim to build robust and scalable applications while maintaining a smooth developer experience. Whether you're onboarding or revisiting optimization techniques, this document serves as a practical reference to keep our codebase clean, performant, and future-ready.
 
-Originally, the Social Media Scheduler app was built with:
+**1. React StrictMode**
 
--   State management (`useState`) directly inside `App.jsx`
--   API calls (`fetch`) inside `useEffect` or inside button handlers.
--   Delete and add operations tightly coupled with the main component logic.
--   Loading states global or not isolated properly.
+**StrictMode** is a React component that helps identify potential issues in an application during development.
 
-This approach worked for a small-scale project, but as the app grew:
+Benefits:
 
--   The `App.jsx` file became larger and harder to read.
--   Reusing logic between different parts became difficult.
--   Error handling was duplicated.
--   Managing per-action loading states (e.g., deleting a single post) was messy.
+-   Detects unsafe lifecycle methods
+-   Warns about legacy API usage
+-   Helps prepare components for concurrent rendering
+-   Double-invokes rendering logic to surface side effects
 
-<hr>
+How to Use:
 
-### 🎯 What We Changed
+```
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 
-We refactored the app by introducing three custom hooks:
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
 
-| Hook              | Purpose                        | Location               |
-| ----------------- | ------------------------------ | ---------------------- |
-| **useFetchPosts** | Fetch scheduled posts from API | hooks/useFetchPosts.js |
-| **useAddPost**    | Add a new post via API         | hooks/useAddPost.js    |
-| **useDeletePost** | Delete a specific post via API | hooks/useDeletePost.js |
+Note: StrictMode has no impact on production builds.
 
-<hr>
+---
 
-### ✨ Detailed Changes and Why
+**2. useDebugValue in Custom Hooks**
 
-#### 1. **Fetching Posts: `useFetchPosts`**
+**useDebugValue** enhances the debugging of custom hooks by labeling internal state values in React Developer Tools.
 
-#### What Was Before:
+Example:
 
--   In `App.jsx`, there was a `useEffect` making a `fetch('/api/posts')` call.
--   `useState` for posts was directly tied to App logic.
--   No separate error handling logic for fetch failures.
+```
+import { useState, useEffect, useDebugValue } from "react";
 
-#### What We Did:
+const useFetchPosts = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
--   Moved the fetching logic into a **dedicated hook** called `useFetchPosts`.
--   Hook now manages `posts`, `loading`, and `error` internally.
--   Returned `setPosts` so that posts list can still be updated (e.g., after adding or deleting).
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("/api/posts");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        setPosts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
-#### Why:
+  useDebugValue(loading ? "Loading..." : `Loaded ${posts.length} posts`);
+  return { posts, loading, error, setPosts };
+};
+```
 
--   **Cleaner App.jsx** — removed fetch clutter.
--   **Better reusability** — if another page needed posts, `useFetchPosts` could be reused directly.
--   **Centralized error handling** for fetching posts.
+View it:
 
-<hr>
+-   In the React DevTools → Components → The Component which is calling this custom hook.
+-   It appears under the custom hook with a label like: "Loaded 5 posts"
 
-### 2. **Adding a Post: `useAddPost`**
+---
 
-#### What Was Before:
+**3. React Profiler for Performance Insights**
 
--   The `addPost` function was in `App.jsx`.
--   Inside it, `fetch('/api/posts', POST)` was written inline.
--   After adding, updating `scheduledPosts` was handled directly inside the same function.
+The React Profiler helps identify unnecessary re-renders and slow components.
 
-#### What We Did:
+Setup:
 
--   Extracted `addPost` into `useAddPost(setPosts, setToast)`.
--   The hook handles:
-    -   Making the POST request.
-    -   Updating the posts list.
-    -   Triggering appropriate toasts for success and failure.
+-   Install React Developer Tools (for Chrome or Firefox)
+-   Open DevTools → Profiler tab
+-   Click "Record", interact with your app, then "Stop"
 
-#### Why:
+What You’ll See:
 
--   **Separation of responsibilities** — App.jsx only calls `addPost(post)` without worrying about fetch details.
--   **Consistency** — All API interactions now handle errors and success messages uniformly.
--   **Future extensibility** — Easy to add retries, validations, etc., inside the hook without touching App logic.
+-   Flamegraphs showing component render times
+-   Detailed re-render reasons: state, props, or context
+-   Helps spot re-renders with no prop/state changes
 
-<hr>
+---
 
-### 3. **Deleting a Post: `useDeletePost`**
+**4. Cleaning Up Side Effects**
 
-#### What Was Before:
+Proper cleanup in useEffect prevents memory leaks and bugs - especially with subscriptions, timers, or async tasks.
 
--   `deletePost` was a direct async function inside `App.jsx`.
--   There was no per-post loading.
+Good Practice:
 
-#### What We Did:
+```
+useEffect(() => {
+    const timeout = setTimeout(() => {
+        setToast(null);
+    }, 3000);
 
--   Created `useDeletePost(setPosts, setToast)`.
--   Inside `useDeletePost`:
-    -   Introduced `deletingPostId` to track **which** post is being deleted.
-    -   Only that post's button shows a loading spinner.
-    -   On success, the post is removed from local posts list and toast is shown.
+    return () => {
+        console.log("setTimeout is cleared after 3 seconds");
+        clearTimeout(timeout);
+    };
+}, [setToast]);
+```
 
-#### Why:
+Note: In StrictMode, effects (and their cleanups) are run twice to detect bugs. This helps identify code that behaves incorrectly on re-runs.
 
--   **Per-post UX improvement** — user sees spinner only on the post being deleted.
--   **Simplified App logic** — no more managing `deletingPostId` manually inside App.jsx.
--   **Error-safe deletion** — if API fails, appropriate message is shown without app breaking.
+---
+
+**5. Summary & Best Practices**
+
+| Tool / Practice   | Purpose                               | Benefit                               |
+| ----------------- | ------------------------------------- | ------------------------------------- |
+| StrictMode        | Highlight unsafe patterns             | Safer, forward-compatible code        |
+| useDebugValue     | Custom hook debugging                 | DevTools visibility of internal state |
+| React Profiler    | Visualize re-renders and slow updates | Performance insights                  |
+| useEffect Cleanup | Remove timers, subscriptions, etc.    | Prevent memory leaks and race bugs    |
